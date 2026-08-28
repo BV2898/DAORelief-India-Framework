@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAORelief India - Decentralized Disaster Relief Fund PoC</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #f97316; /* Saffron accents for Indian localization */
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #ca8a04;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-heading: #0f172a;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* --- Header & Intro with India Localization --- */
+        header {
+            margin-bottom: 2.5rem;
+            background: linear-gradient(135deg, #064e3b, #111827); /* Deep green/dark theme */
+            border-top: 6px solid var(--accent);
+            color: #fff;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            color: #fff;
+        }
+
+        header p.intro-text {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            max-width: 950px;
+            margin-bottom: 1.5rem;
+        }
+
+        .use-cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #374151;
+            padding-top: 1.5rem;
+        }
+
+        .use-case-tag {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .use-case-tag strong {
+            display: block;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        /* --- Analysis Layout --- */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .analysis-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .analysis-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .positives-title { color: var(--success); }
+        .limitations-title { color: var(--warning); }
+
+        .analysis-list { list-style: none; }
+        .analysis-list li {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .analysis-list li::before {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .positives-list li::before { content: "✓"; color: var(--success); }
+        .limitations-list li::before { content: "⚠"; color: var(--warning); }
+
+        /* --- Dashboard Grid Core --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* --- Vault Metrics --- */
+        .vault-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-box {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-top: 0.25rem;
+        }
+
+        .vault-amount {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-inactive { background-color: #e2e8f0; color: #475569; }
+        .status-active { background-color: #fee2e2; color: var(--danger); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* --- Forms & Controls --- */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-heading);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-heading);
+            background-color: #fff;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .interactive-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .interactive-split { grid-template-columns: 1fr; }
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .btn-accent { background-color: var(--primary); color: white; }
+        .btn-accent:hover { background-color: #1d4ed8; }
+        
+        .btn-warning { background-color: var(--accent); color: white; }
+        .btn-warning:hover { background-color: #ea580c; }
+
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-danger:hover { background-color: #b91c1c; }
+
+        /* --- Recipient Registry Table --- */
+        .ngo-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .ngo-item:last-child { border-bottom: none; }
+        .ngo-row-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        .ngo-meta { font-size: 0.8rem; color: #64748b; font-family: monospace; }
+        .ngo-name { font-weight: 600; color: var(--text-heading); font-size: 0.95rem; }
+        .ngo-balance { font-weight: 700; color: var(--success); font-size: 1rem; }
+        .ngo-focus {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+        }
+
+        /* --- Table View --- */
+        .ledger-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .table-responsive { overflow-x: auto; margin-top: 1.25rem; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        th, td { padding: 1rem; border-bottom: 1px solid var(--border); }
+        th { background-color: #f8fafc; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+        
+        .type-deposit { background: #dcfce7; color: var(--success); padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; }
+        .type-withdrawal { background: #fee2e2; color: var(--danger); padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; }
+        .type-oracle { background: #fef9c3; color: #a16207; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            display: none;
+            border-left: 4px solid var(--primary);
+            background: #eff6ff;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- --- System Introduction & India Localization Context --- -->
+    <header>
+        <h1>DAORelief India Framework</h1>
+        <p class="intro-text">
+            An automated on-chain Proof of Concept (PoC) custom-tailored to circumvent administrative roadblocks and coordinate rapid financial distribution across the Indian subcontinent. By linking decentralized multi-sig smart vaults with automated data validation systems, critical capital shifts transparently from global donors straight to verified local field operations during major national crises.
+        </p>
+        <div class="use-cases-grid">
+            <div class="use-case-tag">
+                <strong>🔥 Western Ghats Forest Fires</strong>
+                Trigged by thermal anomaly indicators and hot-spot infrared satellite streams.
+            </div>
+            <div class="use-case-tag">
+                <strong>🌧 Monsoon Heavy Rainfall</strong>
+                Automated activations tied directly to IMD micro-gauge metrics exceeding cloudburst levels.
+            </div>
+            <div class="use-case-tag">
+                <strong>🌊 Coastal Cyclones & Tsunamis</strong>
+                Immediate capital processing mapped against bay-sensor tsunami wave alerts or wind telemetry.
+            </div>
+            <div class="use-case-tag">
+                <strong>🏢 Urban Structural Collapses</strong>
+                Emergency response funding triggered via local fire service and seismic network logs.
+            </div>
+        </div>
+    </header>
+
+    <!-- --- India Operational Positives vs Technical Limitations --- -->
+    <div class="analysis-grid">
+        <div class="analysis-card">
+            <h3 class="positives-title">Structural Innovation Vectors (India Focus)</h3>
+            <ul class="analysis-list positives-list">
+                <li><strong>Leakage Proof Operations:</strong> Eliminates intermediary bureaucratic tiers, ensuring funds move explicitly to certified accounts.</li>
+                <li><strong>Immediate Liquidity Routing:</strong> Skips traditional weeks-long processing delays to secure financial execution in early critical windows.</li>
+                <li><strong>Public Compliance Trails:</strong> Leverages public cryptographic ledger entries to make post-disaster accountability tracking effortless.</li>
+            </ul>
+        </div>
+        <div class="analysis-card">
+            <h3 class="limitations-title">Technical Realities & Implementation Roadblocks</h3>
+            <ul class="analysis-list limitations-list">
+                <li><strong>Data Dependency Errors:</strong> Complete structural dependency on local weather APIs, radar infrastructure, or third-party sensor hardware networks.</li>
+                <li><strong>Field Verification Limits:</strong> Direct integration with physical identities requires highly secure off-chain coordination layers.</li>
+                <li><strong>Network Gas Price Surges:</strong> Spikes in transaction fee overheads on public chains can restrict micro-payments during periods of high congestion.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="alertBox" class="alert"></div>
+
+    <!-- --- Interactive Control Workstation --- -->
+    <div class="dashboard-grid">
+        
+        <!-- Left Column: Master Vault State + Core Action Boxes -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <span>On-Chain Escrow Smart Contract Vault</span>
+                    <span id="disasterBadge" class="status-badge status-inactive">System Idle</span>
+                </div>
+                
+                <div class="vault-container">
+                    <div class="metric-box" style="grid-column: span 2;">
+                        <div class="metric-label">Aggregated Capital Pool Balance</div>
+                        <div class="vault-amount" id="vaultDisplay">₹ 50,00,00,000</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Active Crisis Category</div>
+                        <div id="activeIndexDisplay" style="font-weight:700; color:var(--text-heading);">None Detected</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Active Regional Sector</div>
+                        <div id="activeRegionDisplay" style="font-weight:700; color:var(--text-heading);">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interactive-split">
+                <!-- Specialized India Disaster Oracle Trigger Simulator -->
+                <div class="card">
+                    <div class="card-title">Indian Meteorological / Hazard Oracles</div>
+                    <div class="form-group">
+                        <label for="disasterType">Incoming Verified Crisis Event</label>
+                        <select id="disasterType" class="form-control">
+                            <option value="Heavy Rainfall">IMD Cloudburst Alert (Rainfall > 100mm/hr)</option>
+                            <option value="Major Flood">River Basin Overflow (Gauge past Danger Level)</option>
+                            <option value="Forest Fire">Uttarakhand Forest Fire (Thermal Grid Alert)</option>
+                            <option value="Tsunami">Indian Ocean Tsunami Inundation Warning</option>
+                            <option value="Earthquake">Himalayan Seismic Belt Displacement (> 6.5 Richter)</option>
+                            <option value="Building Collapse">Metro Center Structural Failure Incident</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="disasterMeta">Target Affected Territory State</label>
+                        <input type="text" id="disasterMeta" class="form-control" value="Assam - Brahmaputra Basin Sector">
+                    </div>
+                    <button id="oracleBtn" class="btn btn-warning" onclick="processOracleInputData()">Push Verified Oracle Event</button>
+                </div>
+
+                <!-- Action Controller Panel -->
+                <div class="card">
+                    <div class="card-title">Transact with Vault Parameters</div>
+                    <div class="form-group">
+                        <label for="actionType">System Context Mode</label>
+                        <select id="actionType" class="form-control" onchange="shiftFormTemplate()">
+                            <option value="deposit">Donor - Fund Escrow Allocation</option>
+                            <option value="withdraw">NGO Wallet - Request Emergency Payout</option>
+                        </select>
+                    </div>
+                    <div id="dynamicFormArea">
+                        <div class="form-group">
+                            <label for="inputAmount">Donation Amount (INR Value)</label>
+                            <input type="number" id="inputAmount" class="form-control" value="5000000">
+                        </div>
+                    </div>
+                    <button class="btn btn-accent" onclick="signEscrowTransaction()">Broadcast On-Chain Tx</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Indian NGO Recipient Network Address Tables -->
+        <div>
+            <div class="card">
+                <div class="card-title">On-Chain India NGO Registry</div>
+                <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">
+                    Verified partner endpoints directly tied to emergency fund routing permissions.
+                </p>
+                
+                <div id="ngoContainer">
+                    <div class="ngo-item">
+                        <div class="ngo-row-main">
+                            <div class="ngo-name">Goonj Rapid Response Hub</div>
+                            <div class="ngo-balance" id="bal-goonj">₹0</div>
+                        </div>
+                        <div class="ngo-meta"><code>0xGoonj_Relief_9a82...11ff</code></div>
+                        <div class="ngo-focus">Focus: Materials, Housing & Heavy Rainfall Floods</div>
+                    </div>
+                    
+                    <div class="ngo-item">
+                        <div class="ngo-row-main">
+                            <div class="ngo-name">Akshaya Patra Relief Node</div>
+                            <div class="ngo-balance" id="bal-akshaya">₹0</div>
+                        </div>
+                        <div class="ngo-meta"><code>0xAkshayaPatra_Crisis...44bc</code></div>
+                        <div class="ngo-focus">Focus: Mass Mass-scale Food Supplies & Urban Incidents</div>
+                    </div>
+
+                    <div class="ngo-item">
+                        <div class="ngo-row-main">
+                            <div class="ngo-name">SEEDS India Escrow Endpoint</div>
+                            <div class="ngo-balance" id="bal-seeds">₹0</div>
+                        </div>
+                        <div class="ngo-meta"><code>0xSEEDS_India_7b31...88de</code></div>
+                        <div class="ngo-focus">Focus: Earthquake, Tsunami & Forest Fire Rehabilitation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- --- Live Blockchain Ledger Audit Log Stream --- -->
+    <div class="ledger-section">
+        <h2>Live Public Event Ledger Stream</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Smart Contract Event Log</th>
+                        <th>Value Trace (INR)</th>
+                        <th>Interacting Node Routing Details</th>
+                        <th>Block Timestamp Context</th>
+                    </tr>
+                </thead>
+                <tbody id="ledgerBody">
+                    <tr>
+                        <td><span class="type-deposit">Deposit Initialization</span></td>
+                        <td>₹ 30,00,00,000</td>
+                        <td><code>0xMumbai_CharityTrust_Alpha...4112</code></td>
+                        <td>2026-05-15 09:22:11</td>
+                    </tr>
+                    <tr>
+                        <td><span class="type-deposit">Deposit Initialization</span></td>
+                        <td>₹ 20,00,00,000</td>
+                        <td><code>0xTechDonor_CSR_Pool...88bb</code></td>
+                        <td>2026-06-01 14:40:55</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live JavaScript State Engine Matching Production Variables
+    let structuralVaultBalance = 500000000;
+    let localOracleStateActive = false;
+    
+    // On-Chain NGO Balances Datastore Map
+    let indianNgoBalances = {
+        '0xGoonj_Relief_9a82...11ff': 0,
+        '0xAkshayaPatra_Crisis...44bc': 0,
+        '0xSEEDS_India_7b31...88de': 0
+    };
+
+    function renderCurrencyINR(value) {
+        return '₹ ' + value.toLocaleString('en-IN');
+    }
+
+    function triggerUINotification(messageText) {
+        const box = document.getElementById('alertBox');
+        box.style.display = 'block';
+        box.innerText = messageText;
+        setTimeout(() => { box.style.display = 'none'; }, 6000);
+    }
+
+    function shiftFormTemplate() {
+        const selectedOption = document.getElementById('actionType').value;
+        const insertArea = document.getElementById('dynamicFormArea');
+
+        if(selectedOption === 'deposit') {
+            insertArea.innerHTML = `
+                <div class="form-group">
+                    <label for="inputAmount">Donation Amount (INR Value)</label>
+                    <input type="number" id="inputAmount" class="form-control" value="10000000">
+                </div>`;
+        } else {
+            insertArea.innerHTML = `
+                <div class="form-group">
+                    <label for="ngoSelect">Authorized Recipient NGO Router</label>
+                    <select id="ngoSelect" class="form-control">
+                        <option value="0xGoonj_Relief_9a82...11ff">Goonj Rapid Response Hub</option>
+                        <option value="0xAkshayaPatra_Crisis...44bc">Akshaya Patra Relief Node</option>
+                        <option value="0xSEEDS_India_7b31...88de">SEEDS India Escrow Endpoint</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputAmount">Disbursement Draw (INR)</label>
+                    <input type="number" id="inputAmount" class="form-control" value="5000000">
+                    <small style="color:var(--accent); font-size:0.8rem;">Rule Restriction: Single transaction draw capped at max ₹3,50,00,000.</small>
+                </div>`;
+        }
+    }
+
+    function processOracleInputData() {
+        const badge = document.getElementById('disasterBadge');
+        const triggerBtn = document.getElementById('oracleBtn');
+        const selectedDisaster = document.getElementById('disasterType').value;
+        const regionalMetaInput = document.getElementById('disasterMeta').value || "India Territory Ground Grid";
+        const currentClockTime = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+        localOracleStateActive = !localOracleStateActive;
+
+        if(localOracleStateActive) {
+            badge.innerText = `CRISIS WARNING: ${selectedDisaster.toUpperCase()}`;
+            badge.className = "status-badge status-active";
+            triggerBtn.innerText = "Revoke Verified Crisis Signature";
+            triggerBtn.className = "btn btn-danger";
+
+            document.getElementById('activeIndexDisplay').innerText = selectedDisaster;
+            document.getElementById('activeRegionDisplay').innerText = regionalMetaInput;
+
+            triggerUINotification(`[ORACLE INGESTION] Smart validation checks complete. Emergency fund withdrawal parameters unlocked for target state: ${regionalMetaInput}.`);
+            pushNewLedgerEntry("Oracle State Flag: TRUE", "-", `Disruption Flag: [${selectedDisaster}] Target Sector: ${regionalMetaInput}`, currentClockTime);
+        } else {
+            badge.innerText = "System Idle";
+            badge.className = "status-badge status-inactive";
+            triggerBtn.innerText = "Push Verified Oracle Event";
+            triggerBtn.className = "btn btn-warning";
+
+            document.getElementById('activeIndexDisplay').innerText = "None Detected";
+            document.getElementById('activeRegionDisplay').innerText = "-";
+
+            triggerUINotification("[ORACLE DEACTIVATION] External metrics tracking back to safe baselines. Emergency execution authorization safely locked down.");
+            pushNewLedgerEntry("Oracle State Flag: FALSE", "-", "Emergency Execution Access Points Paused", currentClockTime);
+        }
+    }
+
+    function signEscrowTransaction() {
+        const flowMode = document.getElementById('actionType').value;
+        const amountField = document.getElementById('inputAmount');
+        const calculatedValue = parseInt(amountField.value) || 0;
+        const currentClockTime = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+        if(calculatedValue <= 0) {
+            alert("Cryptographic Rejection: Transaction values must be explicitly positive integers.");
+            return;
+        }
+
+        if(flowMode === 'deposit') {
+            structuralVaultBalance += calculatedValue;
+            document.getElementById('vaultDisplay').innerText = renderCurrencyINR(structuralVaultBalance);
+            
+            const randomAddressHash = "0xIndiaDonor_Node_" + Math.random().toString(16).substring(2, 6) + "...2026";
+            pushNewLedgerEntry("Direct Escrow Inflow", renderCurrencyINR(calculatedValue), randomAddressHash, currentClockTime);
+            triggerUINotification(`Transaction Settled: Processed ${renderCurrencyINR(calculatedValue)} into on-chain master pool arrays successfully.`);
+            amountField.value = "0";
+        } 
+        else if(flowMode === 'withdraw') {
+            const selectedNgoRoute = document.getElementById('ngoSelect').value;
+
+            if(!localOracleStateActive) {
+                alert("Assertion Error Exception [Tx Reverted]: Vault distribution lock failure. Active weather or disaster oracle verification status signatures must return TRUE to permit relief release cycles.");
+                return;
+            }
+            if(calculatedValue > 35000000) {
+                alert("Assertion Error Exception [Tx Reverted]: Regulatory Cap Violation. Single block allocation requests cannot exceed the security baseline of ₹3,50,00,000.");
+                return;
+            }
+            if(calculatedValue > structuralVaultBalance) {
+                alert("Assertion Error Exception [Tx Reverted]: Insufficient structural capital allocation limits inside master contract addresses.");
+                return;
+            }
+
+            // Readjust Variable Configurations
+            structuralVaultBalance -= calculatedValue;
+            indianNgoBalances[selectedNgoRoute] += calculatedValue;
+            
+            // Re-render Dom Metrics
+            document.getElementById('vaultDisplay').innerText = renderCurrencyINR(structuralVaultBalance);
+            
+            if(selectedNgoRoute.includes("9a82")) document.getElementById('bal-goonj').innerText = renderCurrencyINR(indianNgoBalances[selectedNgoRoute]);
+            if(selectedNgoRoute.includes("44bc")) document.getElementById('bal-akshaya').innerText = renderCurrencyINR(indianNgoBalances[selectedNgoRoute]);
+            if(selectedNgoRoute.includes("88de")) document.getElementById('bal-seeds').innerText = renderCurrencyINR(indianNgoBalances[selectedNgoRoute]);
+
+            pushNewLedgerEntry("Direct Liquidity Payout", renderCurrencyINR(calculatedValue), `Target Router: ${selectedNgoRoute}`, currentClockTime);
+            triggerUINotification(`Transaction Settled: Routed an emergency asset slice of ${renderCurrencyINR(calculatedValue)} straight to authorized NGO wallet fields.`);
+            amountField.value = "0";
+        }
+    }
+
+    function pushNewLedgerEntry(eventNameLabel, rawValueStr, dataRouteString, timeStampString) {
+        const targetTableBody = document.getElementById('ledgerBody');
+        const generatedTrNode = document.createElement('tr');
+        
+        let labelColorClass = "type-deposit";
+        if(eventNameLabel.includes("Payout")) labelColorClass = "type-withdrawal";
+        if(eventNameLabel.includes("Oracle")) labelColorClass = "type-oracle";
+
+        generatedTrNode.innerHTML = `
+            <td><span class="${labelColorClass}">${eventNameLabel}</span></td>
+            <td>${rawValueStr}</td>
+            <td><code>${dataRouteString}</code></td>
+            <td>${timeStampString}</td>
+        `;
+        targetTableBody.insertBefore(generatedTrNode, targetTableBody.firstChild);
+    }
+</script>
+
+</body>
+</html>
